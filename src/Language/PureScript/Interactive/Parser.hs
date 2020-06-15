@@ -76,6 +76,7 @@ psciCommand =
     [ psciImport ""
     , psciDeclaration
     , psciExpression
+    , psciTempBinding
     ]
 
 trim :: String -> String
@@ -114,7 +115,7 @@ parseDirective cmd =
       | otherwise -> SetInteractivePrint <$> parseRest (parseOne parseFullyQualifiedIdent) arg
 
 doArg :: String -> Either String Command
-doArg s = case words s of 
+doArg s = case words s of
           ["prompt", v] ->Right $ Setval v v
           _ -> Left $ "unknow command " ++  s
 
@@ -122,6 +123,23 @@ doArg s = case words s of
 --
 psciExpression :: CST.Parser Command
 psciExpression = Expression . CST.convertExpr "" <$> CST.parseExprP
+
+psciTempBinding :: CST.Parser Command
+psciTempBinding = Decls . (concat . fmap (CST.convertDeclaration "")) .trans <$> CST.parseTempBinding
+
+
+trans :: CST.TempBinding a -> [CST.Declaration a]
+trans (CST.TempBinding a b s w) = flip fmap vars
+  $ \v@(CST.Name stk idt) -> CST.DeclValue a (CST.ValueBindingFields v []
+                                (CST.Unconditional s (CST.Where
+                                                      (CST.ExprLet a (CST.LetIn s
+                                                                      (NE.fromList [CST.LetBindingPattern a b s w]) s
+                                                                      (CST.ExprIdent a (CST.QualifiedName stk Nothing idt) )))
+                                                      Nothing
+                                                     )
+                                )
+                               )
+  where vars = CST.binderToNames b
 
 -- | Imports must be handled separately from other declarations, so that
 -- :show import works, for example.
