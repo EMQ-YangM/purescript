@@ -304,8 +304,8 @@ insertLayout src@(SourceToken tokAnn tok) nextPos stack =
     TokRightParen ->
       state & collapse indentedP & popStack (== LytParen) & insertToken src
 
-    TokOperator _ ">>" ->
-      state & collapse indentedP & popStack (== LytParen) & insertToken src
+    -- TokOperator _ ">>" ->
+    --   state & collapse indentedP & popStack (== LytParen) & insertToken src
 
     TokRightBrace ->
       state & collapse indentedP & popStack (== LytProperty) & popStack (== LytBrace) & insertToken src
@@ -378,7 +378,7 @@ insertLayout src@(SourceToken tokAnn tok) nextPos stack =
     where
     go ((lytPos, lyt) : stk) acc
       | p lytPos lyt =
-          go stk $ if isIndented lyt
+          go stk $ if isIndented lyt && (tokValue src /= TokOperator [] "#" )
                    then acc `snoc` lytToken tokPos TokLayoutEnd
                    else acc
     go stk acc = (stk, acc)

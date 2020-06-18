@@ -5,6 +5,7 @@ module Language.PureScript.CST.Lexer
   , lexTopLevel
   , lexWithState
   , isUnquotedKey
+  , t
   ) where
 
 import Prelude hiding (lex, exp, exponent, lines)
@@ -23,7 +24,10 @@ import Language.PureScript.CST.Monad hiding (token)
 import Language.PureScript.CST.Layout
 import Language.PureScript.CST.Positions
 import Language.PureScript.CST.Types
-
+import qualified Data.Text.IO as TIO
+import Control.Monad (forM_)
+import Prelude (print)
+import Data.IORef
 -- | Stops at the first lexing error and replaces it with TokEof. Otherwise,
 -- the parser will fail when it attempts to draw a lookahead token.
 lenient :: [LexResult] -> [LexResult]
@@ -47,6 +51,21 @@ lex src = do
     , lexSource = src'
     , lexStack = [(SourcePos 0 0, LytRoot)]
     }
+
+t :: IO ()
+t  = do 
+  con <- TIO.readFile "tests/Test.purs"
+  inde <- newIORef 0
+  forM_ (lex con) $ \v -> do
+    case v of 
+      Left e -> print e 
+      Right (SourceToken _ b) -> do
+        sn <- readIORef inde
+        print $ replicate sn ' ' <> show b
+        case b of 
+          TokLayoutStart -> modifyIORef inde (+4)
+          TokLayoutEnd -> modifyIORef inde (\x -> x -4)
+          _ -> return ()
 
 -- | Lexes according to top-level declaration context rules.
 lexTopLevel :: Text -> [LexResult]
