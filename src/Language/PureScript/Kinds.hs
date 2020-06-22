@@ -29,6 +29,8 @@ data Kind a
   = KUnknown a Int
   -- | Kinds for labelled, unordered rows without duplicates
   | Row a (Kind a)
+  -- | Kinds for tuples
+  | RowTuple a (Kind a)
   -- | Function kinds
   | FunKind a (Kind a) (Kind a)
   -- | A named kind
@@ -43,6 +45,9 @@ srcKUnknown = KUnknown NullSourceAnn
 srcRow :: SourceKind -> SourceKind
 srcRow = Row NullSourceAnn
 
+srcRowTuple :: SourceKind -> SourceKind
+srcRowTuple = RowTuple NullSourceAnn
+
 srcFunKind :: SourceKind -> SourceKind -> SourceKind
 srcFunKind = FunKind NullSourceAnn
 
@@ -56,6 +61,8 @@ kindToJSON annToJSON kind =
       variant "KUnknown" a i
     Row a k ->
       variant "Row" a (go k)
+    RowTuple a k ->
+      variant "RowTuple" a (go k)
     FunKind a k1 k2 ->
       variant "FunKind" a (go k1, go k2)
     NamedKind a n ->
@@ -87,6 +94,8 @@ kindFromJSON defaultAnn annFromJSON = A.withObject "Kind" $ \o -> do
       KUnknown a <$> contents
     "Row" ->
       Row a <$> (go =<< contents)
+    "RowTuple" ->
+      RowTuple a <$> (go =<< contents)
     "FunKind" -> do
       (b, c) <- contents
       FunKind a <$> go b <*> go c
@@ -113,6 +122,7 @@ everywhereOnKinds :: (Kind a -> Kind a) -> Kind a -> Kind a
 everywhereOnKinds f = go
   where
   go (Row ann k1) = f (Row ann (go k1))
+  go (RowTuple ann k1) = f (RowTuple ann (go k1))
   go (FunKind ann k1 k2) = f (FunKind ann (go k1) (go k2))
   go other = f other
 
@@ -120,6 +130,7 @@ everywhereOnKindsM :: Monad m => (Kind a -> m (Kind a)) -> Kind a -> m (Kind a)
 everywhereOnKindsM f = go
   where
   go (Row ann k1) = (Row ann <$> go k1) >>= f
+  go (RowTuple ann k1) = (RowTuple ann <$> go k1) >>= f
   go (FunKind ann k1 k2) = (FunKind ann <$> go k1 <*> go k2) >>= f
   go other = f other
 
@@ -127,12 +138,14 @@ everythingOnKinds :: (r -> r -> r) -> (Kind a -> r) -> Kind a -> r
 everythingOnKinds (<>.) f = go
   where
   go k@(Row _ k1) = f k <>. go k1
+  go k@(RowTuple _ k1) = f k <>. go k1
   go k@(FunKind _ k1 k2) = f k <>. go k1 <>. go k2
   go other = f other
 
 annForKind :: Lens' (Kind a) a
 annForKind k (KUnknown a b) = (\z -> KUnknown z b) <$> k a
 annForKind k (Row a b) = (\z -> Row z b) <$> k a
+annForKind k (RowTuple a b) = (\z -> RowTuple z b) <$> k a
 annForKind k (FunKind a b c) = (\z -> FunKind z b c) <$> k a
 annForKind k (NamedKind a b) = (\z -> NamedKind z b) <$> k a
 
@@ -151,6 +164,7 @@ instance Ord (Kind a) where
 eqKind :: Kind a -> Kind b -> Bool
 eqKind (KUnknown _ a) (KUnknown _ a') = a == a'
 eqKind (Row _ a) (Row _ a') = eqKind a a'
+eqKind (RowTuple _ a) (RowTuple _ a') = eqKind a a'
 eqKind (FunKind _ a b) (FunKind _ a' b') = eqKind a a' && eqKind b b'
 eqKind (NamedKind _ a) (NamedKind _ a') = a == a'
 eqKind _ _ = False
@@ -168,6 +182,10 @@ compareKind (KUnknown {}) _ = LT
 compareKind (Row _ a) (Row _ a') = compareKind a a'
 compareKind (Row {}) _ = LT
 compareKind _ (Row {}) = GT
+
+compareKind (RowTuple _ a) (RowTuple _ a') = compareKind a a'
+compareKind (RowTuple {}) _ = LT
+compareKind _ (RowTuple {}) = GT
 
 compareKind (FunKind _ a b) (FunKind _ a' b') = compareKind a b <> compareKind a' b'
 compareKind (FunKind {}) _ = LT

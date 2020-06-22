@@ -458,13 +458,12 @@ binaryVal :: { BinaryVal ()}
 recordLabel :: { RecordLabeled (Expr ()) }
   : label {% fmap RecordPun . toName Ident $ lblTok $1 }
   | label '=' expr { RecordField $1 $2 $3 }
-  | label ':' expr { RecordField $1 $2 $3 }
   | label '=>' expr { RecordField $1 $2 $3 }
 
 recordUpdateOrLabel :: { Either (RecordLabeled (Expr ())) (RecordUpdate ()) }
-  : label ':' expr { Left (RecordField $1 $2 $3) }
+  : label '=' expr { Left (RecordField $1 $2 $3) }
   | label {% fmap (Left . RecordPun) . toName Ident $ lblTok $1 }
-  | label '=' expr { Right (RecordUpdateLeaf $1 $2 $3) }
+  | label '->' expr { Right (RecordUpdateLeaf $1 $2 $3) }
   | label '{' sep(recordUpdate, ',') '}' { Right (RecordUpdateBranch $1 (Wrapped $2 $3 $4)) }
 
 recordUpdate :: { RecordUpdate () }
