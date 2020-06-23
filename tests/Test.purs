@@ -1,19 +1,7 @@
 module Test where
 
-infixr 5 greatThan as >
-infixr 5 lessThan as <
+t :: (Integer,Integer) -> Boolean
+t (x,z) = z
 
-foreign import greatThan :: Integer -> Integer -> Boolean
-foreign import lessThan :: Integer -> Integer -> Boolean
-
-otherwise :: Boolean
-otherwise = true
-
-max :: Integer -> Integer -> Integer
-max x y | x > y = x 
-        | true = y
-
--- f :: Integer -> String
--- f n | n > 0 = "Positive Integer"
---     | n < 0 = "Negative Integer"
---     | true  = "nice"
+k :: (Integer,Integer,Integer,Integer,String,String,Boolean,String)
+k = (1,2,1,2,"nice", "great",true,"nic")

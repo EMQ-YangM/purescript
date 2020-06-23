@@ -371,11 +371,10 @@ data TuplesItem a = TuplesItem
 srcTuplesItem :: SourceType -> TuplesItem SourceAnn
 srcTuplesItem = TuplesItem NullSourceAnn
 
-tuplesToList :: Type a -> ([TuplesItem a], Type a)
-tuplesToList = go where
-  go (Tuples ann ty row) =
-    first (TuplesItem ann  ty :) (tuplesToList row)
-  go r = ([], r)
+tuplesToList :: Show a => Type a -> ([TuplesItem a])
+tuplesToList  (Tuples ann ty row) = (TuplesItem ann  ty ) : (tuplesToList row)
+tuplesToList  (REmpty _) = [] -- [TuplesItem ann (REmpty ann)]
+tuplesToList x = error $ show x
 
 tuplesFromList :: ([TuplesItem a], Type a) -> Type a
 tuplesFromList (xs, r) = foldr (\(TuplesItem ann  ty) -> Tuples ann ty) r xs
