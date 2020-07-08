@@ -89,7 +89,27 @@ data Type a
   -- Note: although it seems this constructor is not used, it _is_ useful,
   -- since it prevents certain traversals from matching.
   | ParensInType a (Type a)
-  deriving (Show, Generic, Functor, Foldable, Traversable)
+  deriving (Generic, Functor, Foldable, Traversable)
+
+instance (Show a) => Show (Type a) where 
+  show (TypeConstructor _ (Qualified _ (ProperName n))) = show n
+  show (TypeApp _ (TypeApp _ (TypeConstructor _ (Qualified _ (ProperName "Function") )) t0 ) t1) = show t0 <> " -> " <> show t1
+  show (ForAll _ _ _ t _ ) = "ForAll " <> show t
+  show _ = "other"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 instance NFData a => NFData (Type a)
 
