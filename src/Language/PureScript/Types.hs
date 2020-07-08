@@ -95,6 +95,8 @@ instance (Show a) => Show (Type a) where
   show (TypeConstructor _ (Qualified _ (ProperName n))) = show n
   show (TypeApp _ (TypeApp _ (TypeConstructor _ (Qualified _ (ProperName "Function") )) t0 ) t1) = show t0 <> " -> " <> show t1
   show (ForAll _ _ _ t _ ) = "ForAll " <> show t
+  show (TUnknown _ _ ) = "TUnknown"
+  show (TypeVar _ t) = show t
   show _ = "other"
 
 
