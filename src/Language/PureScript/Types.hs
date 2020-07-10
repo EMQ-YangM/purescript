@@ -110,18 +110,6 @@ instance (Show a) => Show (Type a) where
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 instance NFData a => NFData (Type a)
 
 srcTUnknown :: Int -> SourceType

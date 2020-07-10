@@ -109,7 +109,7 @@ rebuildModule' MakeActions{..} exEnv externs m@(Module _ _ moduleName _ _) = do
                  ++ "; details:\n" ++ prettyPrintMultipleErrors defaultPPEOptions errs
                Right d -> d
 
-  evalSupplyT nextVar' $ codegen (pTraceShow (show renamed) renamed) docs exts
+  evalSupplyT nextVar' $ codegen (pTraceShow  renamed renamed) docs exts
   return exts
 
 -- | Compiles in "make" mode, compiling each module separately to a @.js@ file and an @externs.json@ file.
