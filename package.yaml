@@ -37,6 +37,7 @@ extra-source-files:
   - CONTRIBUTORS.md
   - CONTRIBUTING.md
 dependencies:
+  - pretty-simple
   - aeson >=1.0 && <1.5
   - aeson-better-errors >=0.8
   - aeson-pretty
