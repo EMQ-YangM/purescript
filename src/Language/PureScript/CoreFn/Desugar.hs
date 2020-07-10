@@ -51,6 +51,9 @@ moduleToCoreFn env (A.Module modSS coms mn decls (Just exps)) =
   ssA :: SourceSpan -> Ann
   ssA ss = (ss, [], Nothing, Nothing)
 
+  ssB :: SourceSpan -> Maybe SourceType -> Ann 
+  ssB ss mst = (ss, [], mst, Nothing)
+
   -- | Desugars member declarations from AST to CoreFn representation.
   declToCoreFn :: A.Declaration -> [Bind Ann]
   declToCoreFn (A.DataDeclaration (ss, com) Newtype _ _ [ctor]) =
@@ -67,7 +70,7 @@ moduleToCoreFn env (A.Module modSS coms mn decls (Just exps)) =
   declToCoreFn (A.DataBindingGroupDeclaration ds) =
     concatMap declToCoreFn ds
   declToCoreFn (A.ValueDecl (ss, com) name _ _ [A.MkUnguarded e]) =
-    [NonRec (ssA ss) name (exprToCoreFn ss com Nothing e)]
+    [NonRec (ssB ss $ getValueType' (Qualified (Just mn) name)) name (exprToCoreFn ss com Nothing e)]
   declToCoreFn (A.BindingGroupDeclaration ds) =
     [Rec . NEL.toList $ fmap (\(((ss, com), name), _, e) -> ((ssA ss, name), exprToCoreFn ss com Nothing e)) ds]
   declToCoreFn (A.TypeClassDeclaration sa@(ss, _) name _ supers _ members) =
@@ -179,6 +182,13 @@ moduleToCoreFn env (A.Module modSS coms mn decls (Just exps)) =
     case lookupValue env name of
       Just (_, External, _) -> Just IsForeign
       _ -> Nothing
+
+  getValueType' :: Qualified Ident -> Maybe SourceType
+  getValueType' name =
+    case lookupValue env name of
+      Just (sp, _ , _) -> Just sp
+      _ -> Nothing -- error $ show env <> "---------" <> show mn
+
 
   -- | Gets metadata for data constructors.
   getConstructorMeta :: Qualified (ProperName 'ConstructorName) -> Meta

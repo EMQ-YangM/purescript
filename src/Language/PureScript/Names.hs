@@ -191,11 +191,11 @@ isBuiltinModuleName _ = False
 -- A qualified name, i.e. a name with an optional module name
 --
 data Qualified a = Qualified (Maybe ModuleName) a
-  deriving (Eq, Ord, Functor, Foldable, Traversable, Generic)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
-instance Show a => Show (Qualified a) where 
-  show (Qualified Nothing a) = " " <> " " <> show a
-  show (Qualified (Just v) a) = show v <> " " <> show a
+-- instance Show a => Show (Qualified a) where 
+--   show (Qualified Nothing a) = " " <> " " <> show a
+--   show (Qualified (Just v) a) = show v <> " " <> show a
 
 instance NFData a => NFData (Qualified a)
 

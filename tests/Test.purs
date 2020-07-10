@@ -1,7 +1,6 @@
 module Test where
 
-t1 :: Integer -> Integer -> Integer -> Integer
-t1 x y z = c x y z 
-  where c a b d = b :: Integer
-
+t1 x y z = y
+   where c x y z = x 
+t2 a b c = a 
 
