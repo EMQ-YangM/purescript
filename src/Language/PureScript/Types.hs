@@ -100,6 +100,12 @@ instance (Show a) => Show (Type a) where
   show (TypeVar _ t) = show t
   show (TypeLevelString _ pss) = "TypeLevStr " <> show pss
   show (TypeWildcard _ mt) = "TypeWidcard " <> show mt
+  show (ConstrainedType _ _ t) = "ConstrainedType " <> show t
+  show (Skolem _ t i s) = "Skolem " <> show t 
+  show (REmpty _) = "REmpty"
+  show (RCons _ l ta tb) = show l <> ":" <> show ta <> " , " <> show tb
+  show (Tuple _ ta tb) =  show ta <> "," <> show tb
+  show (ParensInType _ ty) = show ty
   show _ = "other"
 
 
