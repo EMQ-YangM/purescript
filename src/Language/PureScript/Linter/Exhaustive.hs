@@ -15,13 +15,12 @@ import Control.Applicative
 import Control.Arrow (first, second)
 import Control.Monad (unless)
 import Control.Monad.Writer.Class
-import Control.Monad.Supply.Class (MonadSupply, fresh, freshName)
+import Control.Monad.Supply.Class (MonadSupply)
 
 import Data.Function (on)
 import Data.List (foldl', sortBy)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map as M
-import Data.Text (Text)
 import qualified Data.Text as T
 
 import Language.PureScript.AST.Binders
@@ -36,7 +35,6 @@ import Language.PureScript.Pretty.Values (prettyPrintBinderAtom)
 import Language.PureScript.Traversals
 import Language.PureScript.Types as P
 import qualified Language.PureScript.Constants as C
-import qualified Data.List as L
 
 -- | There are two modes of failure for the redundancy check:
 --

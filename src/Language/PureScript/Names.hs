@@ -195,7 +195,7 @@ data Qualified a = Qualified (Maybe ModuleName) a
 
 instance Show a => Show (Qualified a) where 
   show (Qualified Nothing a) = " " <> " " <> show a
-  show (Qualified (Just v) a) = " " <> " " <> show a
+  show (Qualified (Just _) a) = " " <> " " <> show a
 
 instance NFData a => NFData (Qualified a)
 
