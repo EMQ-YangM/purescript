@@ -9,6 +9,7 @@ import qualified Data.Text as T
 import           Data.Text (Text)
 import qualified Language.PureScript as P
 import qualified Text.PrettyPrint.Boxes as Box
+import System.Console.ANSI
 
 -- TODO (Christoph): Text version of boxes
 textT :: Text -> Box.Box
@@ -111,7 +112,8 @@ printModuleSignatures moduleName P.Environment{..} =
                       _ -> "data"
 
               in
-                Just $ textT (prefix <> " " <> P.runProperName name <> foldMap ((" " <>) . fst) typevars) Box.// printCons pt
+                Just $ textT (P.colorCode (Just (Dull, Yellow))
+                                           $ prefix <> " " <> P.runProperName name <> foldMap ((" " <>) . fst) typevars) Box.// printCons pt
 
             _ ->
               Nothing
