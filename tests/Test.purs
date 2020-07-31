@@ -6,5 +6,11 @@ t3 x = x
 
 f x y = y
 
-t2 = f 2 t3 t1{name="000", pos={x=41}}
+t2 = f 2 t3 t1{name="100", pos={x=41}}
+
+data T = T {name :: String, age :: Integer} {pk :: String}
+
+ttt = T {name= "yangmiao", age=23} {pk="baba"}
+
+
 

@@ -775,6 +775,7 @@ tT (TypeVar _ (Name _ (Ident x))) = x
 tT (TypeParens _ (Wrapped _ a _)) = tT a
 tT (TypeArr _ ta _ tb ) = tT ta <> "To" <> tT tb
 tT (TypeList _ a) = "list" <> tT a
+tT (TypeTuple _ (Wrapped _ (Just (Separated v xs)) _) ) = "tuple" <> tT v <> TT.concat (fmap (tT.snd) xs)
 tT x = error $ show x
 
 intValToBinaryLit :: BinaryVal a -> (Integer,Integer)
