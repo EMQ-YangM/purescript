@@ -205,6 +205,7 @@ checkTypeClassInstance cls i = check where
     TypeApp _ t1 t2 -> check t1 >> check t2
     REmpty _ | isFunDepDetermined -> return ()
     RCons _ _ hd tl | isFunDepDetermined -> check hd >> check tl
+    Tuple _ t1 t2 | isFunDepDetermined-> check t1 >> check t2
     ty -> throwError . errorMessage $ InvalidInstanceHead ty
 
 -- |
