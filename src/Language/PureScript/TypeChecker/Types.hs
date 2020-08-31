@@ -454,7 +454,8 @@ infer' (Case vals binders) = do
 infer' (Receive (Just (e1, e2)) binders) = do
   ret <- freshType
   binders' <- checkBinders' ret binders
-  return $ TypedValue' True (Receive (Just (e1, e2)) binders') ret
+  e2' <- infer' e2
+  return $ TypedValue' True (Receive (Just (e1, tvToExpr e2')) binders') ret
 infer' (Receive Nothing binders) = do
   ret <- freshType
   binders' <- checkBinders' ret binders
